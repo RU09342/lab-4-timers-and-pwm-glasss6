@@ -24,3 +24,6 @@ initializeTimer(20); // Initialize a timer for 20Hz
 
 ## Extra Work
 Boards with more than one button will showcase software debouncing with two buttons. Button 1 will toggle LED 1 with software debouncing. Button 2 will toggle LED 2 with software debouncing. This process is still done using one Timer module.
+
+The following oscilloscope screenshot displays the bouncing from a button press:
+![Image of Button Bouncing](scope_2.png)
