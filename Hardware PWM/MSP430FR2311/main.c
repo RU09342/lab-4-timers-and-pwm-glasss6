@@ -54,8 +54,8 @@ void main(void)
 
 void initLED()
 {
-    //P1SEL0 |= (BIT6); // Set LED to be controlled by PWM timer
-    P1SEL1 |= (BIT0);
+    P1SEL1 |= (BIT6); // Set LED to be controlled by PWM timer
+    //P1SEL1 |= (BIT0);
     LED1SEL &= ~(LED1); // Disable non-PWM LED port mux
     //BTN0SEL &= ~(BTN0); // Disable button port mux
 

@@ -1,15 +1,26 @@
 # Software Debouncing
-In previously labs, we talked about how objects such as switches can cause some nasty effects since they are actually a mechanical system at heart. We talked about the simple hardware method of debouncing, but due to the many different design constraints, you may not be able to add or adjust hardware. Debouncing is also only one of many applications which would require the use of built in Timers to allow for other processes to take place.
+## Stephen Glass
 
-## Task
-You need to utilize the TIMER modules within the MSP430 processors to implement a debounced switch to control the state of an LED. You most likely will want to hook up your buttons on the development boards to an oscilloscope to see how much time it takes for the buttons to settle. The idea here is that your processor should be able to run other code, while relying on timers and interrupts to manage the debouncing in the background. You should not be using polling techniques for this assignment. Your code should also be able to detect 
+## main.c
+### Compatibility
+* MSP430G2553
+* MSP430FR2311
+* MSP430FR5994
+* MSP430FR6989
+* MSP430FR5529
 
-### Hints
-You need to take a look at how the P1IE and P1IES registers work and how to control them within an interrupt routine. Remember that the debouncing is not going to be the main process you are going to run by the end of the lab.
+NOTE: Boards with more than one button include additional functionality! (E.g: FR5994, FR6989, FR5529)
+
+### Description
+main.c will toggle an LED when a button is pressed. Pressing Button 1 will enable LED1. Pressing Button 2 will enable LED2. Both buttons have software debouncing code. A clock runs at 20Hz and checks for debouncing logic to be done. If a button was pressed, it will not allow you to press the button again until it passes through the 20Hz clock 5 times. This equates to a debouncing delay of 250ms. This is all done using Timer modules and interrupts so you can perform other actions while this is happening.
+
+## Functions
+### initializeTimer(int capture)
+This function will initialize the TimerA/B module with the timing of your choosing. This is done by using the SMCLK and using any clock dividers neccessary to achieve correct timing.
+* int capture = time in hertz to cycle
+
+Example:
+initializeTimer(20); // Initialize a timer for 20Hz
 
 ## Extra Work
-### Low Power Modes
-Go into the datasheets or look online for information about the low power modes of your processors and using Energy Trace, see what the lowest power consumption you can achieve while still running your debouncing code. Take a note when your processor is not driving the LED (or unplug the header connecting the LED and check) but running the interrupt routine for your debouncing.
-
-### Double the fun
-Can you expand your code to debounce two switches? Do you have to use two Timer peripherals to do this?
+Boards with more than one button will showcase software debouncing with two buttons. Button 1 will toggle LED 1 with software debouncing. Button 2 will toggle LED 2 with software debouncing. This process is still done using one Timer module.

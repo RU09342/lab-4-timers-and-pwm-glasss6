@@ -1,28 +1,37 @@
-# Software PWM
-Most microprocessors will have a Timer module, but depending on the device, some may not come with pre-built PWM modules. Instead, you may have to utilize software techniques to synthesize PWM on your own.
+# Software Debouncing
+## Stephen Glass
 
-## Task
-You need to generate a 1kHz PWM signal with a duty cycle between 0% and 100%. Upon the processor starting up, you should PWM one of the on-board LEDs at a 50% duty cycle. Upon pressing one of the on-board buttons, the duty cycle of the LED should increase by 10%. Once you have reached 100%, your duty cycle should go back to 0% on the next button press. You also need to implement the other LED to light up when the Duty Cycle button is depressed and turns back off when it is let go. This is to help you figure out if the button has triggered multiple interrupts.
+## main.c
+### Compatibility
+* MSP430G2553
+* MSP430FR2311
+* MSP430FR5994
+* MSP430FR6989
+* MSP430FR5529
 
-### Hints
-You really, really, really, really need to hook up the output of your LED pin to an oscilloscope to make sure that the duty cycle is accurate. Also, since you are going to be doing a lot of initialization, it would be helpful for all persons involved if you created your main function like:
-'''c
-int main(void)
-{
-	WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
-	LEDSetup(); // Initialize our LEDS
-	ButtonSetup();  // Initialize our button
-	TimerA0Setup(); // Initialize Timer0
-	TimerA1Setup(); // Initialize Timer1
-	__bis_SR_register(LPM0_bits + GIE);       // Enter LPM0 w/ interrupt
-}
-'''
-This way, each of the steps in initialization can be isolated for easier understanding and debugging.
+### Description
+This code will generate a 1kHz PWM signal with a duty cycle between 0% and 100%. When the processor starts up it will initially set an LED to 50% duty cycle. When you press Button 1 it will increase the duty cycle of the LED by 100%. Once the duty cycle has reached 100% the duty cycle will go to 0% on the next button press.
 
+Additionally, when Button 1 is pressed it will light up LED2 while the button is being depressed. This is figure out if the button has been triggered multiple times. However, the button should not be triggered multiple times because the buttons have Software debouncing code implemented.
+
+The PWM timer will call an interrupt function when either of the capture compare registers are reached. In that interrupt function we will toggle an LED to simulate a PWM waveform with the duty cycle specified. We can change the duty cycle dynamically by changing the value of the capture compare registers.
+
+## Functions
+### initializeTimer(int capture)
+This function will initialize the TimerA/B module with the timing of your choosing. This is done by using the SMCLK and using any clock dividers neccessary to achieve correct timing.
+* int capture = time in hertz to cycle
+
+Example:
+initializeTimer(20); // Initialize a timer for 20Hz
+
+### initLED(void)
+This function will initialize the LEDs for PWM output.
+
+### initializeButtons(void)
+This function will initialize any buttons needed for interrupts.
+
+### initializePwmTimer(void)
+This function will setup a Timer module to create a 1kHz PWM wave with an initial duty cycle of 50%.
 
 ## Extra Work
-### Linear Brightness
-Much like every other things with humans, not everything we interact with we perceive as linear. For senses such as sight or hearing, certain features such as volume or brightness have a logarithmic relationship with our senses. Instead of just incrementing by 10%, try making the brightness appear to change linearly. 
-
-### Power Comparison
-Since you are effectively turning the LED off for some period of time, it should follow that the amount of power you are using over time should be less. Using Energy Trace, compare the power consumption of the different duty cycles. What happens if you use the pre-divider in the timer module for the PWM (does it consume less power)?
+Both buttons have software debouncing implemented. There is a debouncing code that takes place for 240ms after the button is pressed. This will prevent any accidental presses.
