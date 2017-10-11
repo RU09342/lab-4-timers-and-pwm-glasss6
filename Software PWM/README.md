@@ -1,4 +1,4 @@
-# Software Debouncing
+# Software PWM
 ## Stephen Glass
 
 ## main.c

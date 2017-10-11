@@ -1,4 +1,4 @@
-# Hardware Debouncing
+# Hardware PWM
 ## Stephen Glass
 
 ## main.c
